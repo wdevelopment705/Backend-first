@@ -1,18 +1,11 @@
-const mysql = require('mysql2');  
+import mysql from "mysql2/promise";
 
-const database = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "firstbase"
+export const db = mysql.createPool({
+  host: process.env.DB_HOST,       // Railway MYSQLHOST
+  user: process.env.DB_USER,       // Railway MYSQLUSER
+  password: process.env.DB_PASSWORD, // Railway MYSQLPASSWORD
+  database: process.env.DB_NAME,   // Railway MYSQLDATABASE
+  port: process.env.DB_PORT,       // Railway MYSQLPORT
+  waitForConnections: true,
+  connectionLimit: 10,
 });
-
-database.connect((err) => {
-    if (err) {
-        console.log("Database connection error:", err);
-    } else {
-        console.log("Database connected");
-    }
-});
-
-module.exports = database;
