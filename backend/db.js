@@ -1,11 +1,11 @@
 import mysql from "mysql2/promise";
 
 export const db = mysql.createPool({
-  host: process.env.DB_HOST,       // Railway MYSQLHOST
-  user: process.env.DB_USER,       // Railway MYSQLUSER
-  password: process.env.DB_PASSWORD, // Railway MYSQLPASSWORD
-  database: process.env.DB_NAME,   // Railway MYSQLDATABASE
-  port: process.env.DB_PORT,       // Railway MYSQLPORT
+  host: process.env.DB_HOST,       
+  user: process.env.DB_USER,       
+  password: process.env.DB_PASSWORD, 
+  database: process.env.DB_NAME,   
+  port: process.env.DB_PORT,       
   waitForConnections: true,
   connectionLimit: 10,
 });
