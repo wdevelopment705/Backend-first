@@ -1,26 +1,32 @@
 import { db } from "../db.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export default async function handler(req, res) {
-  if (req.method !== "POST")
-    return res.status(405).json({ message: "Method not allowed ❌" });
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Method not allowed" });
+  }
+
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
 
   try {
-    const { name, email, password } = req.body || {};
+    // hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "All fields required ❌" });
-    }
-
-    const hash = bcrypt.hashSync(password, 10);
+    // insert into DB
     await db.query(
-      "INSERT INTO signup (name,email,password) VALUES (?,?,?)",
-      [name, email, hash]
+      "INSERT INTO signup (name, email, password) VALUES (?, ?, ?)",
+      [name, email, hashedPassword]
     );
 
-    return res.status(201).json({ message: "User registered successfully ✅" });
-
+    res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    if (err.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+    res.status(500).json({ error: err.message });
   }
 }
