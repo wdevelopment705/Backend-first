@@ -2,15 +2,20 @@
 import { db } from "../db.js";
 
 export default async function handler(req, res) {
+  // CORS
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") return res.status(200).end();
+
   if (req.method !== "GET") {
-    return res.status(405).json({ message: "Method not allowed ❌" });
+    return res.status(405).json({ message: "Method not allowed" });
   }
 
   try {
-    await db.query("SELECT 1"); // Check DB connection
-    res.status(200).json({ message: "Server and DB are running ✅" });
+    await db.query("SELECT 1"); // Test DB connection
+    res.status(200).json({ message: "Server and DB running ✅" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server running, but DB connection failed ❌", error: err.message });
+    res.status(500).json({ message: "DB connection failed ❌", error: err.message });
   }
 }
